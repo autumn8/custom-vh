@@ -1,53 +1,35 @@
 <template>
-  <div id="app">
-    <button class='toggle-btn' @click='toggleResizeBehaviour()'></button>
+  <div id="app">    
     <header class='header'>Header</header>    
     <div class='content'>
       <div class='content__info'>
         <p>Content</p>
-      </div>
-      <custom-input class='text-input'></custom-input>
+      </div>      
+       <input class='text-input' v-keyboard-state-broadcaster/> 
     </div>
     <footer class="footer">Footer</footer>
   </div>
 </template>
 
 <script>
-import CustomInput from '@/components/CustomInput';
 import EventBus from '@/eventBus';
 
-export default {
-  data() {
-    return {
-      shouldToggleOnKeyboardResize: true
-    }
-  },
-  components: {
-    'custom-input': CustomInput
-  },
-  beforeDestroy () {
-    window.removeEventListener('resize', this.handleWindowResize)
-  },
+export default {    
   mounted () {
     this.setCustomVH();
-    window.addEventListener('resize', this.handleWindowResize);
-    console.log('mounted');
-     EventBus.$on('KEYBOARD_OPEN', isKeyboardOpen => {
-      this.isKeyboardOpen = isKeyboardOpen;      
-    })
+    window.addEventListener('resize', this.handleWindowResize);    
+    EventBus.$on('KEYBOARD_OPEN', isKeyboardOpen => {
+      if (isKeyboardOpen) window.removeEventListener('resize', this.handleWindowResize);            
+      else window.addEventListener('resize', this.handleWindowResize);       
+    });
 
   },
   methods: {
-    handleWindowResize (e) {      
-      if (this.isKeyboardOpen && this.shouldToggleOnKeyboardResize) return;
+    handleWindowResize (e) {            
       this.setCustomVH();
-    },
-    toggleResizeBehaviour () {
-      this.shouldToggleOnKeyboardResize = !this.shouldToggleOnKeyboardResize;
-    },
+    },    
     setCustomVH() {
-      const vh = window.innerHeight * 0.01;
-      console.log(vh);
+      const vh = window.innerHeight * 0.01;      
       const rootElement = document.documentElement;
       rootElement.style.setProperty('--vh', `${vh}px`);
     }
@@ -58,8 +40,12 @@ export default {
 
 <style lang="scss">
 
-html, body {
-  height:100%;
+@mixin vh($value) {
+  height: $value;
+  height: calc(var(--vh, 1vh) * #{$value});
+}
+
+html, body {      
   margin: 0;
   padding: 0;
 }
@@ -76,10 +62,13 @@ html, body {
 
 .text-input {
   margin-bottom:10px;
-  // width: 96%;
-  // left: 2%;
-  // position: absolute; 
-  // top: 5vh;
+  border-radius: 6px;
+  font-size:1.2rem;
+  box-sizing: border-box;
+  padding: 2%;
+  height: 40px;
+  width: 90%;
+  left: 2%;
 }
 
 .toggle-btn {
@@ -94,8 +83,7 @@ html, body {
 }
 
 .header {
-  height: 15vh;
-  height: calc(var(--vh, 1vh) * 15);
+  @include vh(30);  
   background-color: grey;
   display:flex;
   align-items: center;
@@ -103,11 +91,10 @@ html, body {
 }
 
 .content {
+  @include vh(55);  
   display: flex;
   flex-direction: column;
-  position: relative;
-  height: 70vh;
-  height: calc(var(--vh, 1vh) * 70);
+  position: relative;  
   color:white;
   background-color: blue;
   display:flex;
@@ -121,15 +108,13 @@ html, body {
   }
 }
 
-.footer {
-  height: 15vh;
-  height: calc(var(--vh, 1vh) * 15);  
+.footer {  
+  @include vh(15);  
   color: white;
   background-color: purple;
   display:flex;
   align-items: center;
-  justify-content: center;
-  
+  justify-content: center;  
 }
 
 </style>
