@@ -29,7 +29,8 @@ VH values are set using a scss mixin.
 npm install
 ```
 
-### Compiles and hot-reloads for development. Port currently configured to 3123.
+### Compiles and hot-reloads for development. 
+Port currently configured to 3123.
 ```
 npm run serve
 ```
