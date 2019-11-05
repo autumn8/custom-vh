@@ -41,7 +41,7 @@ export default {
 <style lang="scss">
 
 @mixin vh($value) {
-  height: $value;
+  height: #{$value}vh;
   height: calc(var(--vh, 1vh) * #{$value});
 }
 
